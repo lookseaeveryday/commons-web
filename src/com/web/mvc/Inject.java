@@ -41,7 +41,6 @@ class Inject {
 			if (types.length != 1) // only one parameter
 				continue;
 
-			String attrName = methodName.substring(3);
 			String value = request.getParameter(modelNameAndDot );
 
 			if (value != null) {
