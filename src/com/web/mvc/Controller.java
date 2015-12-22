@@ -19,25 +19,24 @@ public abstract class Controller {
 		this.response = response;
 	}
 
+	/**
+	 * 获取页面提交参数
+	 * @param name
+	 * @return
+	 */
 	public String getPara(String name) {
 		return request.getParameter(name);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getSessionAttr(String key) {
-		HttpSession session = request.getSession(false);
-		return session != null ? (T) session.getAttribute(key) : null;
-	}
 
-	@SuppressWarnings("unchecked")
+	public <T> T getModel(Class<T> modelClass,String modelName) {
+		return (T) Inject.inject(modelClass,modelName, request);
+	}
+	
 	public <T> T getModel(Class<T> modelClass) {
-		return (T) Inject.inject(modelClass, request);
+		return (T) Inject.inject(modelClass,null, request);
 	}
 
-	public Controller setSessionAttr(String key, Object value) {
-		request.getSession().setAttribute(key, value);
-		return this;
-	}
 
 	public String getPara(String name, String defaultValue) {
 		String result = request.getParameter(name);
@@ -46,6 +45,20 @@ public abstract class Controller {
 
 	public HttpSession getSession() {
 		return request.getSession();
+	}
+	
+	public Controller setSessionAttr(String key, Object value) {
+		request.getSession().setAttribute(key, value);
+		return this;
+	}
+	/**
+	 * 获取session
+	 * @param key
+	 * @return
+	 */
+	public <T> T getSessionAttr(String key) {
+		HttpSession session = request.getSession(false);
+		return session != null ? (T) session.getAttribute(key) : null;
 	}
 
 	public Map<String, String[]> getParaMap() {

@@ -1,19 +1,21 @@
 package com.web.mvc;
 
+
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.web.kit.StrKit;
+
+
 @SuppressWarnings("unchecked")
 class Inject {
 
-	
-	public static <T> T inject(Class<?> modelClass, HttpServletRequest request) {
-		String modelName = null; 
- 		return (T) inject(modelClass, modelName, request);
+	public static <T> T getModel(Class<T> modelClass,HttpServletRequest request) {
+		return (T)inject(modelClass,null,request);
 	}
-
-	private static final <T> T inject(Class<?> modelClass, String modelName, HttpServletRequest request) {
+	
+	public static final <T> T inject(Class<?> modelClass, String modelName, HttpServletRequest request) {
 		Object model = null;
 		try {
 			model = modelClass.newInstance();
@@ -29,7 +31,7 @@ class Inject {
 		Method[] methods = modelClass.getMethods();
 		// 当modelName为null或者“”时，不添加前缀
 		String modelNameAndDot = "";
-		if (modelName == "") {
+		if (StrKit.notBlank(modelName)) {
 			modelNameAndDot = modelName + ".";
 		}
 		for (Method method : methods) {
@@ -41,7 +43,8 @@ class Inject {
 			if (types.length != 1) // only one parameter
 				continue;
 
-			String value = request.getParameter(modelNameAndDot );
+			String attrName = methodName.substring(3);
+			String value = request.getParameter(modelNameAndDot + StrKit.firstCharToLowerCase(attrName));
 
 			if (value != null) {
 				try {
